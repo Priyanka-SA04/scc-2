@@ -15,14 +15,34 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f"User('{self.username}', '{self.user_type}')"
 
+class Hospital(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    hospital_id = db.Column(db.String(80), unique=True, nullable=False)
+    name = db.Column(db.String(80), nullable=False)
+    past_requests = db.Column(db.Integer, nullable=False)
+    average_request_urgency = db.Column(db.Float, nullable=False)
+
+    def __repr__(self):
+        return f"Hospital('{self.hospital_id}', '{self.name}')"
+
+class Vendor(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    vendor_id = db.Column(db.String(80), unique=True, nullable=False)
+    name = db.Column(db.String(80), nullable=False)
+    average_delivery_time = db.Column(db.Float, nullable=False)
+
+    def __repr__(self):
+        return f"Vendor('{self.vendor_id}', '{self.name}')"
+
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    item = db.Column(db.String(80), nullable=False)
-    amount = db.Column(db.Float, nullable=False)
-    hospital_username = db.Column(db.String(80), db.ForeignKey('user.username'), nullable=False)
+    request_id = db.Column(db.String(80), unique=True, nullable=False)
+    hospital_id = db.Column(db.String(80), db.ForeignKey('hospital.hospital_id'), nullable=False)
+    quantity = db.Column(db.Float, nullable=False)
+    urgency = db.Column(db.Float, nullable=False)
+    vendor_id = db.Column(db.String(80), db.ForeignKey('vendor.vendor_id'), nullable=False)
     status = db.Column(db.String(50), nullable=False, default='current')
-    urgency = db.Column(db.Boolean, default=False)
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def __repr__(self):
-        return f"Order('{self.item}', '{self.amount}', '{self.status}')"
+        return f"Order('{self.request_id}', '{self.hospital_id}', '{self.quantity}', '{self.urgency}', '{self.vendor_id}', '{self.status}')"
